@@ -11,11 +11,17 @@ primero se deben instalar las dependencias necesarias para exponer las rutas
 * @types/node
 * typescript
 * tsc-watch
+```
+npm i @types/cors @types/express @types/morgan @types/node tsc-watch typescript -D
+```
 
 ### Dependencias de producción 
 * cors
 * express
 * morgan
+```
+npm i cors express morgan
+```
  
 Descripción corta de cada paquete
 
