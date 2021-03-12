@@ -110,7 +110,7 @@ root-|
 
 En mi editor de código "VS Code" se vería así 
 
-![Folder](assets\DOC\folder.png)
+![Folder]( assets\img\folder.png)
 
 La carpeta "/src" contendra el codigo TypeScript donde escribiremos el codigo, y la carpeta "/dist" sera la traduccion a JavaScript que haga TypeScript "como se explico hace un par te parrafos antes"
 
