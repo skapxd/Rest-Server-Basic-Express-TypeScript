@@ -38,7 +38,7 @@ Descripción corta de cada paquete
 * `"@types/..." ` son los tipados de cada paquete
 ___
 
-Despues de instalar las dependencias se iniciara el proyecto en TypeScript, se debe ejecutar el siguiente comando "tsc --init " para hacer un par de configuraciones iniciales, las configuraciones en "tsconfig.json" se van a hacer de forma progresiva de forma que se entienda para que sirve cada cambio en dicho archivo 
+Despues de instalar las dependencias se iniciara el proyecto en TypeScript, se debe ejecutar el siguiente comando `tsc --init` para hacer un par de configuraciones iniciales, las configuraciones en "tsconfig.json" se van a hacer de forma progresiva de forma que se entienda para que sirve cada cambio en dicho archivo, si tiene problemas al ejecutar este comando, aca puede encontar soluciones [Link de stackoverflow](https://stackoverflow.com/questions/56199111/visual-studio-code-cmd-error-cannot-be-loaded-because-running-scripts-is-disabl)
 
 ### Paso 1
 
@@ -54,19 +54,19 @@ ___
 
 ### Paso 2
 
-`"lib": [], ` a  `"lib": ["ES5", "ES6"],`
+`//"lib": [], ` a  `"lib": ["ES5", "ES6"],`
 
 [LINK DE REFERENCIA A LA DOC](https://www.typescriptlang.org/tsconfig#lib)
 
 Esta línea es de TypeScript 2.0 y hace referencia a las 
-características que se usara de JavaScript
+características que se usara de JavaScript, tener en cuenta que se tiene que descomentar
 
 ___
 ### Paso 3
 de 
 ```json
-"outDir": "./",
-"rootDir": "./",
+//"outDir": "./",
+//"rootDir": "./",
 ```
 a
 ```json
@@ -83,7 +83,7 @@ Esta linea hace referencia al path del codigo que escribiremos de TypeScript "./
 ___
 
 ### Paso 4
-`"strictPropertyInitialization": true,` a `"strictPropertyInitialization": false,`
+`//"strictPropertyInitialization": true,` a `"strictPropertyInitialization": false,`
 
 [LINK DE REFERENCIA DE ROOTDIR EN A LA DOC](https://www.typescriptlang.org/tsconfig#strictPropertyInitialization)
 
