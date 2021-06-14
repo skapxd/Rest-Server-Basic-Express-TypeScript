@@ -135,7 +135,7 @@ En mi editor de código "VS Code" se vería así
 
 ![Folder]( assets/img/folder.png)
 
-La carpeta `./src` contendrá el código de `TypeScript`, y la carpeta `./dist` sera la [`Transpilacion`](../#transpilacion) a JavaScript que haga TypeScript "como se explico hace un par te párrafos antes"
+La carpeta `./src` contendrá el código de `TypeScript`, y la carpeta `./dist` sera la [`Transpilacion`](../../#transpilacion) a JavaScript que haga TypeScript "como se explico hace un par te párrafos antes"
 
 Dentro de la carpeta `./src` crearemos con un archivo `server.ts`, el path se vería asi `./src/server.ts`
 
