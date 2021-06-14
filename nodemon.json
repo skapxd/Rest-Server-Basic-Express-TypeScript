@@ -1,0 +1,11 @@
+{
+    "watch":[
+        "src",
+        "views"
+    ],
+    "ext": "ts, js, hbs",
+    "ignore":[
+        ""
+    ],
+    "exec":"ts-node ./src/index.ts"
+}

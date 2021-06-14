@@ -2,7 +2,7 @@
 
 ## Crear API REST
 
-primero se deben instalar las dependencias necesarias para exponer las rutas 
+primero se deben instalar las dependencias iniciales necesarias, luego instalaremos más dependencias en lo que profundicemos
 
 ### Dependencias de desarrollo
 * @types/express
@@ -10,9 +10,10 @@ primero se deben instalar las dependencias necesarias para exponer las rutas
 * @types/morgan 
 * @types/node
 * typescript
-* tsc-watch
+* nodemon
+* ts-node
 ```
-npm i @types/cors @types/express @types/morgan @types/node tsc-watch typescript -D
+npm i -D @types/cors @types/express @types/morgan @types/node tsc-watch typescript ts-node nodemon
 ```
 
 ### Dependencias de producción 
@@ -27,80 +28,102 @@ Descripción corta de cada paquete
 
 * `"cors"` permite que cualquier url pueda solicitar datos a nuestro servidor [Link para mas info](https://www.npmjs.com/package/cors)
 
-* `"express"` permite crear un servidor minimalista pero poderoso[Link para mas info](https://www.npmjs.com/package/express)
+* `"express"` permite crear un servidor minimalista pero poderoso [Link para mas info](https://www.npmjs.com/package/express)
 
-* `"morgan"` permite hacer logs automaticos de las peticiones que se hacen [Link para mas info](https://www.npmjs.com/package/morgan)
+* `"morgan"` permite hacer logs automáticos de las peticiones que se hacen [Link para mas info](https://www.npmjs.com/package/morgan)
 
-* `"typescript"` permite hacer codigo tipado y provee "intellisense" caracteristica que puede reducir los errores de escritura de funciones, metodos, y un monton de cosas mas, no se tu, pero a mi me sirve y me gusta [Link para mas info](https://www.npmjs.com/package/typescript)
+* `"typescript"` permite hacer código tipado y provee `intellisense` característica que puede reducir los errores de escritura de funciones, métodos ... [Link para mas info](https://www.npmjs.com/package/typescript)
 
-* `"tsc-watch"` es una extension de `"typescript"` y permite crear scripts en funcion del resultado de la traduccion de .ts a .js "Sera muy util para no hacer un npm run build para cada cambio ya que es molesto" [Link para mas info]( https://www.npmjs.com/package/tsc-watch)
+* `"ts-node"` lo utilizaremos para ejecutar `TypeScript` directamente en `Node` [Link para mas info](https://www.npmjs.com/package/ts-node)
+
+* `"nodemon"` lo utilizaremos para reiniciar el servidor cada vez que haya un cambio en el código [Link para mas info](https://www.npmjs.com/package/nodemon)
 
 * `"@types/..." ` son los tipados de cada paquete
 ___
 
-Despues de instalar las dependencias se iniciara el proyecto en TypeScript, se debe ejecutar el siguiente comando "tsc --init " para hacer un par de configuraciones iniciales, las configuraciones en "tsconfig.json" se van a hacer de forma progresiva de forma que se entienda para que sirve cada cambio en dicho archivo 
+Después de instalar las dependencias se iniciara el proyecto en `TypeScript`, se debe ejecutar el siguiente comando `tsc --init`  para hacer un par de configuraciones iniciales, las configuraciones en `tsconfig.json` se van a hacer de forma progresiva de forma que se entienda para que sirve cada cambio en dicho archivo 
 
 ### Paso 1
-
 Cambiar de 
+```json
+"target": "es5",
+```
+a 
+```json
+"target": "es6",
+```
 
-`"target": "es5",` a `"target": "es6",`
-
-[LINK DE REFERENCIA A LA DOC](https://www.typescriptlang.org/tsconfig#target)
-
-Esta linea indica que el codigo escrito en TypeScript se convertira a la version de JavaScript mencionada
+Esta linea indica que el código escrito en `TypeScript` se convertirá a la version de `JavaScript` mencionada [LINK DE REFERENCIA A LA DOC](https://www.typescriptlang.org/tsconfig#target)
 
 ___
 
 ### Paso 2
+Cambiar de 
+```json
+"lib": [],
+"lib": ["ES5", "ES6"],
+```
+a
+```json
+"lib": [],
+"lib": ["ES5", "ES6"],
+```
 
-`"lib": [], ` a  `"lib": ["ES5", "ES6"],`
-
-[LINK DE REFERENCIA A LA DOC](https://www.typescriptlang.org/tsconfig#lib)
-
-Esta línea es de TypeScript 2.0 y hace referencia a las 
-características que se usara de JavaScript
-
+Esta línea hace referencia a las 
+características que se usara de `JavaScript` [LINK DE REFERENCIA A LA DOC](https://www.typescriptlang.org/tsconfig#lib)
 ___
 ### Paso 3
-de 
+Cambiar de 
 ```json
-"outDir": "./",
-"rootDir": "./",
+//  "outDir": "./",
+//  "rootDir": "./",
 ```
 a
 ```json
 "outDir": "./dist",
 "rootDir": "./src",
 ```
+Esta linea busca el código de `TypeScript` en `./src`, luego `Transpila`( `Traducir`, `Compilar`... son términos validos pero estrictamente es `Transpilar`, si quiere conocer la diferencia le dejo el [Enlace](https://ingenieriadesoftware.es/diferencia-transpilacion-compilacion/)(#transpilacion) ) el código a `JavaScript` y lo guarda en `./dist` 
 
-[LINK DE REFERENCIA DE OUTDIR EN A LA DOC](https://www.typescriptlang.org/tsconfig#outDir)
+[LINK DE REFERENCIA DE `outDir` EN A LA DOC](https://www.typescriptlang.org/tsconfig#outDir)
 
-[LINK DE REFERENCIA DE ROOTDIR EN A LA DOC](https://www.typescriptlang.org/tsconfig#rootDir)
+[LINK DE REFERENCIA DE `rootDir` EN A LA DOC](https://www.typescriptlang.org/tsconfig#rootDir)
 
-Esta linea hace referencia al path del codigo que escribiremos de TypeScript "./src" y la carpeta "./dist" es la traduccion de TypeScript hacia JavaScript
 
 ___
 
 ### Paso 4
-`"strictPropertyInitialization": true,` a `"strictPropertyInitialization": false,`
+Cambiar de 
+```json
+"strictPropertyInitialization": true,
+```
+a
 
-[LINK DE REFERENCIA DE ROOTDIR EN A LA DOC](https://www.typescriptlang.org/tsconfig#strictPropertyInitialization)
+```json
+"strictPropertyInitialization": false,
+```
 
-esta linea hace referencia a que no es obligatorio inizializar una propiedad dentro de una clase 
+Esta linea hace referencia a que no es obligatorio inicializar una propiedad dentro de una clase [LINK DE REFERENCIA EN A LA DOC](https://www.typescriptlang.org/tsconfig#strictPropertyInitialization)
+
 ___
 
 ### Paso 5
-de `//"moduleResolution": "node",` a `"moduleResolution": "node", `, Notar que se quitaron las "//"
-
+Cambiar de 
+```json
+//"moduleResolution": "node",
+```
+a
+```json
+"moduleResolution": "node",
+```
 [LINK DE REFERENCIA DE ROOTDIR EN A LA DOC](https://www.typescriptlang.org/tsconfig#moduleResolution)
 
-esta linea hace referencia a una estrategia que aplica TypeScript para el reconocimiento de rutas
+Esta linea hace referencia a una estrategia que aplica TypeScript para el reconocimiento de rutas
 ___
 
 ### Paso 6
 
-Ahora empezaremos a crear la estructura, en la carpeta raiz se debera crear 2 carpetas
+Ahora empezaremos a crear la estructura, en la carpeta raíz se deberá crear 2 carpetas
 
 ``` 
 root-|
@@ -112,32 +135,63 @@ En mi editor de código "VS Code" se vería así
 
 ![Folder]( assets/img/folder.png)
 
-La carpeta "/src" contendra el codigo TypeScript donde escribiremos el codigo, y la carpeta "/dist" sera la traduccion a JavaScript que haga TypeScript "como se explico hace un par te parrafos antes"
+La carpeta `./src` contendrá el código de `TypeScript`, y la carpeta `./dist` sera la [`Transpilacion`](transpilacion) a JavaScript que haga TypeScript "como se explico hace un par te párrafos antes"
 
-Dentro de la carpeta src empezaremos con un archivo index.ts donde iniciaremos el servidor 
+Dentro de la carpeta `./src` crearemos con un archivo `server.ts`, el path se vería asi `./src/server.ts`
+
+Luego crearemos una clase para trabajar el servidor con POO
 
 ```ts
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import { Router } from 'express';
 
-const port = process.env.PORT || 3000;
+interface Constructor {
+  port: string | number 
+  routes?: Router[]
+}
 
-const app = express();
+export default class Server {
 
-// middlewares
-app.use( cors() );
-app.use( morgan('dev') );
-app.use( express.json() );
+  public app = express();
 
-// Init Server
-app.listen( port, () => {
-    console.log(`Server at http://localhost:${ port }`)
-})
+  constructor({
+      routes,
+      port 
+  } : Constructor ) {
+      
+      this.app.use( cors() );
+      this.app.use( morgan('dev') );
+      this.app.use( express.json() );
+  
+      this.app.listen( port, () => {
+          console.log(`Server at http://localhost:${ port }`)
+      })
 
+      if (routes) {
+          this.app.use(...routes)
+      }
+
+  }
+
+}
 ```
 
-Bueno, aqui hay varias cositas nuevas, normalmente uno quiere subir la aplicacion node a un hosting y ese hosting expone un puerto para que nosotros podamos hacer que el servidor funcione, pero claro, no queremos cambiar de forma constante entre modo desarrollo y modo produccion, entonces creamos una variable `const port = process.env.PORT || 3000;` y le preguntamos por la variable de entorno PORT, si la tiene es porque esta en el hosting y si no la tiene es porque esta en desarrollo
+Bueno, aquí hay un par de cosas nuevas, normalmente uno quiere subir la aplicación `Node` a un hosting y ese hosting puede exponer un puerto para que nosotros podamos hacer que el servidor funcione, pero claro, no queremos cambiar de forma constante entre modo desarrollo y modo producción, entonces en el argumento con nombre del constructor pedimos de forma obligatoria un puerto
+
+Para explicarlo mejor, crearemos un fichero llamado `index.ts` dentro de `./src`, el path seria asi `./src/index.ts`
+
+luego de crear el fichero `index.ts` llamaremos la clase `Server`
+```ts
+import Server from './server';
+
+new Server({
+    port: process.env.PORT || 3000,
+});
+
+```
+`const port = process.env.PORT || 3000;` y le preguntamos por la variable de entorno PORT, si la tiene es porque esta en el hosting y si no la tiene es porque esta en desarrollo
 
 Despues se crea una nueva instancia de express, se añaden los middlewares desde la nueva instancia, aqui hay un middleware nuevo, ` app.use( express.json() );` se usa para que parsee de forma automatica todas las peticiones que contengan en su cabezera `content-type: application-json`
 
