@@ -72,7 +72,7 @@ a
 Esta línea hace referencia a las 
 características que se usara de `JavaScript` [LINK DE REFERENCIA A LA DOC](https://www.typescriptlang.org/tsconfig#lib)
 ___
-### Paso 3
+### Paso 3 {#transpilacion}
 Cambiar de 
 ```json
 //  "outDir": "./",
@@ -83,7 +83,7 @@ a
 "outDir": "./dist",
 "rootDir": "./src",
 ```
-Esta linea busca el código de `TypeScript` en `./src`, luego `Transpila`( `Traducir`, `Compilar`... son términos validos pero estrictamente es `Transpilar`, si quiere conocer la diferencia le dejo el [Enlace](https://ingenieriadesoftware.es/diferencia-transpilacion-compilacion/)(#transpilacion) ) el código a `JavaScript` y lo guarda en `./dist` 
+Esta linea busca el código de `TypeScript` en `./src`, luego `Transpila`( `Traducir`, `Compilar`... son términos validos pero estrictamente es `Transpilar`, si quiere conocer la diferencia le dejo el [###Enlace](https://ingenieriadesoftware.es/diferencia-transpilacion-compilacion/) ) el código a `JavaScript` y lo guarda en `./dist`
 
 [LINK DE REFERENCIA DE `outDir` EN A LA DOC](https://www.typescriptlang.org/tsconfig#outDir)
 
@@ -135,7 +135,7 @@ En mi editor de código "VS Code" se vería así
 
 ![Folder]( assets/img/folder.png)
 
-La carpeta `./src` contendrá el código de `TypeScript`, y la carpeta `./dist` sera la [`Transpilacion`](../../#transpilacion) a JavaScript que haga TypeScript "como se explico hace un par te párrafos antes"
+La carpeta `./src` contendrá el código de `TypeScript`, y la carpeta `./dist` sera la [`Transpilacion`](https://github.com/skapxd/Rest-Server-Basic-Express-TypeScript/#paso-3) a JavaScript que haga TypeScript "como se explico hace un par te párrafos antes"
 
 Dentro de la carpeta `./src` crearemos con un archivo `server.ts`, el path se vería asi `./src/server.ts`
 
