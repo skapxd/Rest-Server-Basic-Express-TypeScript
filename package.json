@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "dev-2": "tsc-watch --onSuccess \"npm start\" ",
     "start": "node dist/index.js"
   },
   "keywords": [],

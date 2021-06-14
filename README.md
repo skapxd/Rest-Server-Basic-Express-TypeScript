@@ -135,7 +135,7 @@ En mi editor de código "VS Code" se vería así
 
 ![Folder]( assets/img/folder.png)
 
-La carpeta `./src` contendrá el código de `TypeScript`, y la carpeta `./dist` sera la [`Transpilacion`](https://github.com/skapxd/Rest-Server-Basic-Express-TypeScript/#paso-3) a JavaScript que haga TypeScript "como se explico hace un par te párrafos antes"
+La carpeta `./src` contendrá el código de `TypeScript`, y la carpeta `./dist` sera la [`Transpiración`](https://ingenieriadesoftware.es/diferencia-transpilacion-compilacion/) a JavaScript
 
 Dentro de la carpeta `./src` crearemos con un archivo `server.ts`, el path se vería asi `./src/server.ts`
 
@@ -178,7 +178,9 @@ export default class Server {
 }
 ```
 
-Bueno, aquí hay un par de cosas nuevas, normalmente uno quiere subir la aplicación `Node` a un hosting y ese hosting puede exponer un puerto para que nosotros podamos hacer que el servidor funcione, pero claro, no queremos cambiar de forma constante entre modo desarrollo y modo producción, entonces en el argumento con nombre del constructor pedimos de forma obligatoria un puerto
+Bueno, aquí hay un par de cosas nuevas, normalmente uno quiere subir la aplicación `Node` a un hosting y ese hosting puede exponer un puerto para que el servidor lo utilice, pero claro, no queremos cambiar de forma constante entre modo desarrollo y modo producción
+
+Para eso dentro de la clase `Server` creamos un `argumento nombrado obligatorio` llamado `port`
 
 Para explicarlo mejor, crearemos un fichero llamado `index.ts` dentro de `./src`, el path seria asi `./src/index.ts`
 
@@ -191,76 +193,99 @@ new Server({
 });
 
 ```
-`const port = process.env.PORT || 3000;` y le preguntamos por la variable de entorno PORT, si la tiene es porque esta en el hosting y si no la tiene es porque esta en desarrollo
+`port: process.env.PORT || 3000;` esto funciona asi
 
-Despues se crea una nueva instancia de express, se añaden los middlewares desde la nueva instancia, aqui hay un middleware nuevo, ` app.use( express.json() );` se usa para que parsee de forma automatica todas las peticiones que contengan en su cabezera `content-type: application-json`
+Si `port: process.env.PORT` existe entonces estamos en modo producción, si no existe utilizara el puerto `3000` que hare referencia a que se esta ejecutando localmente o que el hosting no tiene un puerto asignado a app de `Node` como suele ser el caso de algunos `Cpanel` 
 
-Para arranzar el servidor existen muchas formas, pero comenzare con la mas molesta porque asi se entendera porque uso la otra
 
-Para correr el servidor se debe ingresar el comando en la raiz del proyecto
+Para arrancar el servidor existen muchas formas, pero comenzare con la mas fácil
 
-`npx tsc`
+`npx ts-node src/index.ts`
 
-Despues de que haga la traduccion de .ts a .js ( Suele ser muy rapido ) se debe correr otro comando para arrancar el servidor, ya que TypeScript no es ejecutado por node.
+Esto [`Transpila`](https://ingenieriadesoftware.es/diferencia-transpilacion-compilacion/) el código de `TypeScript` a `JavaScript` y ejecuta el servidor
 
-`node dist/index.js`
 
 y debería salir un mensaje como este en consola 
 ``` 
-PS C:\Users\manue\OneDrive\Escritorio\Angular\blog-pyndele\back> node dist/index.js
+D:\Rest-Server-Basic-Express-TypeScript> npx ts-node src/index.ts
 Server at http://localhost:3000
 ```
 
-Como vemos estamos usando dos comandos, uno para traducir de .ts a .js y otro para lenvantar el servidor, aqui en donde entra la dependencia de desarrollo `"tsc-watch"`
+Ahora si si modificamos el código y queremos ver los cambios tenemos que bajar el servidor y volverlo a levantar, para evitar esto utilizaremos la dependencia `nodemon` 
 
-En el `package.json ` vamos a añadir un par de scripts
+En la raíz del proyecto crearemos un archivo llamado `nodemon.json`
+
+
+![Folder]( assets/img/nodemon.png)
+
+Y dentro escribiremos lo siguiente 
 
 ``` json
-  "scripts": {
-    "dev": "tsc-watch --onSuccess \"npm start\" ",
-    "start": "node dist/index.js"
-  },
+{
+  "ext": "ts, js, hbs",
+  "watch":[ "src" ],
+  "ignore":[ "" ],
+  "exec":"ts-node ./src/index.ts"
+}
 ```
 
-Ahora tenemos dos scripts, `"start"` para el hosting ( Azure ) donde se subira la app y `"dev"` para nosotros, con `"dev"` el servidor estara pendiente de los cambios en el codigo y ejecutara otro script despues de que la traduccion se haga sin errores  
+Esto dice lo siguiente
 
-para correr el script `"dev"` se debe ejecutar el comando
+`"ext": "ts, js, hbs",` esto escucha los cambios en las extensiones ...
 
-```
-npm run dev
-```
+`"watch":[ "src" ],` esto escucha los cambios en carpetas especificas ...
+
+`"ignore":[ "" ],` esto ignora los cambios en carpetas especificas ...
+
+`"exec":"ts-node ./src/index.ts"` esto ejecuta el script cada vez que haya un cambio
+
+Ahora debemos correr el servidor con los cambios hechos, en la consola escribiremos 
+
+`npx nodemon` 
 
 y responderá con un mensaje parecido a este 
 
 ```
-7:57:28 a. m. - Starting compilation in watch mode...
-
-7:57:30 a. m. - Found 0 errors. Watching for file changes.
-
-> back@1.0.0 start C:\Users\manue\OneDrive\Escritorio\Angular\blog-pyndele\back
-> node dist/index.js
-
+PS D:\Rest-Server-Basic-Express-TypeScript> npx nodemon src/index.ts
+[nodemon] 2.0.7
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): src\**\* views
+[nodemon] watching extensions: ts,js,hbs
+[nodemon] starting `ts-node ./src/index.ts src/index.ts`
 Server at http://localhost:3000
 ```
-Ahora cada ves que se guarden los cambios con `"control + S"` se actualizara el servidor
 
-Agregaremos 2 carpetas al directorio `src` y quedara algo asi
+Asi como esta funciona perfectamente pero puede cansar tener que recordar el comando, para eso podemos crear un script personalizado en `package.json` que se vería asi
 
-``` 
+![Folder]( assets/img/package.png)
+
+Ahora con ejecutar el script 
+
+`npm run dev`
+
+y responderá con un mensaje parecido a este 
+```
+PS D:\Rest-Server-Basic-Express-TypeScript> npm run dev
+> back@1.0.0 dev D:\Rest-Server-Basic-Express-TypeScript
+> nodemon
+[nodemon] 2.0.7
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching path(s): src\**\* views  
+[nodemon] watching extensions: ts,js,hbs    
+[nodemon] starting `ts-node ./src/index.ts` 
+Server at http://localhost:3000
 
 ```
 
-``` 
-root-|
-     |-dist
-     |-src-|
-           |-controller
-           |-router
-```
+En este momento el servidor ya deberia responder un mensaje como este 
 
-La carpeta `"router"` se encargara de manejar las rutas y adicionar middleware que se necesiten y la carpeta `"controller"` se encargara de manejar la logica detras de cada ruta
+![Folder]( assets/img/error-route.png)
 
-Comenzaremos en la carpeta controller y crearemos un archivo con el nombre `"controller.ts"`
+Ahora debemos agregarle las rutas, ya sea para una `Web server` o una `API Rest`
+
+Para agregar las rutas debemos crear 2 carpetas dentro de `/src` que serian `/src/controller` y `/src/router` 
+
+Comenzaremos en la carpeta `/src/controller` y crearemos un archivo con el nombre `/src/controller/controller.ts`
 
 El código en `"controller.ts"` quedaría así:
 ```ts
@@ -268,11 +293,13 @@ import { Request, Response } from 'express';
 
 export const getRoot = async ( req: Request, res: Response) : Promise<Response> => {
  
-    return res.send('Hola')
+    return res.send('Hola Mundo 😁')
 }
 ```
+`/src/controller/controller.ts` se encargara de manejar la lógica de cada ruta
 
-Ahora las rutas, dentro de la carpeta `"router"` creare un archivo llamado `"router.ts"` para sincronizar las funciones de `"controller.ts"` con las funciones de `"router.ts"`
+
+Ahora vamos a por la carpeta `/src/router` y crearemos un archivo con el nombre `/src/router/router.ts`
 
 El código de `"router.ts"` quedaría así:
 
@@ -291,34 +318,27 @@ router.get(
 export default router;
 ```
 
-Ahora hay que decirle a `"express"` que utilize las rutas, normalmente se hace en `"index.ts"`
+se encargara de declarar las rutas y adicionar `Middleware` que se necesiten, mas adelante mostrare un par de ejemplos de ese tal `Middleware`
+
+
+
+Ahora hay que decirle a nuestra clase `Server` que utilize las rutas
 
 Y el código se vería así:
 
 ``` ts
-import express from 'express';
-import morgan from 'morgan';
-import cors from 'cors';
-import router from './router/router';
+import routes from './router/router';
+import Server from './server';
 
-const port = process.env.PORT || 3000;
-
-const app = express();
-
-// middlewares
-app.use( cors() );
-app.use( morgan('dev') );
-app.use( express.json() );
-
-// Notar que se añadio esta linea
-// Router
-app.use( router )
-
-// Init Server
-app.listen( port, () => {
-    console.log(`Server at http://localhost:${ port }`)
-})
-
+new Server({
+    port: process.env.PORT || 3000,
+    routes: [
+        routes
+    ]
+});
 ```
- Y listo, solo toca acceder a la direccion que aparece en la consola  
+Y listo, solo toca acceder a la dirección que aparece en la consola, que en mi caso es `Server at http://localhost:3000`, si todo sale bien deberíamos ver este mensaje
+
+![Folder]( assets/img/primera-ruta.png)
+
 

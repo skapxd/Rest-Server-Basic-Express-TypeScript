@@ -14,7 +14,7 @@ export default class Server {
 
     constructor({
         routes,
-        port 
+        port   
     } : Constructor ) {
         
         this.app.use( cors() );
