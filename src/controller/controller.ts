@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-export const getRoot = async ( req: Request, res: Response) : Promise<Response> => {
+export const getRoot = async ( req: Request, res: Response) => {
  
-    return res.send('Hola Mundo 😁')
+    return res.render('hello_word')
 }

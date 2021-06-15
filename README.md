@@ -489,7 +489,7 @@ viewEngine?: ViewEngine
 ifProductionMode?: boolean
 routError?: (req: Request, res: Response) => void;
 ```
-El primer parámetro que vemos es `ViewEngine` y este hace referencia al motor de plantilla que vamos a usar para el renderizado del html desde el servidor ( SSR ), este argumento es un enum, asi qye solo hay que importarlo y ver que opciones tiene, recuerde que la clase `Serve` se llama desde `/src/index.ts` y después de modificarla un poco se vería algo asi
+El primer parámetro que vemos es `ViewEngine` y este hace referencia al motor de plantilla que vamos a usar para el renderizado del html desde el servidor ( SSR ), este argumento es un enum, asi que solo hay que importarlo y ver que opciones tiene, recuerde que la clase `Serve` se llama desde `/src/index.ts` y después de modificarla un poco se vería algo asi
 
 ```ts
 import routes from './router/router';
@@ -509,4 +509,44 @@ new Serve({
 });
 ```
 
-El argumento `ifProductionMode` hace referencia si se esta ejecutando localmente o en una maquina en la nube mienta que `routerError` hace referencia a la función que se ejecutara cuando un cliente haga una petición a una ruta que aun no existe 
+El argumento `ifProductionMode` hace referencia a la maquina donde se esta ejecutando, que puede ser localmente o en una maquina en la nube mientras que `routerError` hace referencia a la función que se ejecutara cuando un cliente haga una petición a una ruta que aun no existe 
+
+Ahora nos queda renderizar una vista `HTML` utilizando `EJS`
+
+En el directorio raíz, creamos una carpeta `/public`
+
+![Folder]( assets/img/public.png)
+
+Dentro de `/public` creamos un archivo llamado `/public/hello_word.ejs` y escribimos lo siguiente 
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1> Hello Word 😁</h1>
+</body>
+</html>
+```
+
+Esta vista html la vamos a renderizar en el controlador `/src/controller/controller.ts` de la siguiente manera 
+
+```ts
+import { Request, Response } from 'express';
+
+export const getRoot = async ( req: Request, res: Response) => {
+ 
+    return res.render('hello_word')
+}
+```
+
+Si guardamos cambios y refrescamos el navegador deberíamos ver el código html
+
+![Folder]( assets/img/html.png)
+
+Siéntase libre de utilizar este repositorio como cascaron para sus proyectos, esto es lo básico que me hubiera gustado saber al empezar, dejare el enlace a otros repositorios donde profundizaremos un poco mas, suerte 👍 

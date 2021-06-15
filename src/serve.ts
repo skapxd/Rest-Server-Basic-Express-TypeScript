@@ -15,6 +15,8 @@ export enum ViewEngine{
 
 interface Constructor {
     routes?: Router[]
+    burst?: number 
+    limit?: number
     port: string | number 
     viewEngine?: ViewEngine
     ifProductionMode?: boolean
@@ -25,24 +27,26 @@ interface Constructor {
 export default class Serve {
 
     public app = express();
-
-    private ddos = new Ddos({burst:10, limit:15})
-
-    private numCpu = os.cpus().length;
+    private numCpu = os.cpus().length; 
 
     constructor({
         port,
         routes,
+        burst = 10,
+        limit = 15,
         routError,
         viewEngine,
         ifProductionMode: productionMode
     } : Constructor ) {
+
+        const ddos = new Ddos({burst:burst, limit:limit})
+
         
         // middlewares 
         this.app.use( cors() );
         this.app.use( morgan('dev') );
         this.app.use( express.json() );
-        this.app.use( this.ddos.express);
+        this.app.use( ddos.express);
 
         // Eliminar encabezado
         this.app.disable('x-powered-by');
