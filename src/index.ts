@@ -1,9 +1,15 @@
 import routes from './router/router';
-import Server from './server';
+import Serve, { ViewEngine } from './serve';
+import { Request, Response } from 'express';
 
-new Server({
+new Serve({
+    ifProductionMode: process.env.PORT ? true : false ,
     port: process.env.PORT || 3000,
+    viewEngine: ViewEngine.EJS,
     routes: [
-        routes
-    ]
+        routes,
+    ],
+    routError: ( req: Request, res: Response ) => {
+        res.send('page not found')
+    }
 });

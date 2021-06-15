@@ -342,3 +342,171 @@ Y listo, solo toca acceder a la dirección que aparece en la consola, que en mi 
 ![Folder]( assets/img/primera-ruta.png)
 
 
+Ya que tenemos lo mínimo para empezar es hora de hacer otro par de ajustes que nos ayudaran a mejorar el rendimiento, mejorar la seguridad y utilizar un motor de plantillas para facilitar el SSR ( Server Side Rendering - existen otros métodos de renderizado [link para más info sobre métodos de renderizado ](https://www.toptal.com/front-end/client-side-vs-server-side-pre-rendering) )
+
+Como dije antes iremos instalando dependencias acorde las necesitemos, y en este momento necesitamos esta [link de la doc](https://www.npmjs.com/package/ddos)
+```
+npm i ddos
+```
+
+Vamos a modificar la clase `Server` un poco hasta que se vea asi
+```ts
+import express from 'express';
+import morgan from 'morgan';
+import cors from 'cors';
+import { Router, Request, Response } from 'express';
+
+// New imports
+import cluster from "cluster";
+import os from "os";
+// Imported with required because it has no types
+const Ddos = require('ddos')
+
+export enum ViewEngine{
+    EJS = 'ejs' 
+}
+
+interface Constructor {
+    routes?: Router[]
+    port: string | number 
+
+    // New optional named arguments
+    viewEngine?: ViewEngine
+    ifProductionMode?: boolean
+    routError?: (req: Request, res: Response) => void;
+}
+
+
+export default class Server {
+
+    public app = express();
+
+    // New Atributes
+    private ddos = new Ddos({burst:10, limit:15})
+    private numCpu = os.cpus().length;
+
+    constructor({
+        port,
+        routes,
+        
+        /* New optional named arguments */
+        routError,
+        viewEngine,
+        ifProductionMode
+    } : Constructor ) {
+        
+        // Middlewares 
+        this.app.use( cors() );
+        this.app.use( morgan('dev') );
+        this.app.use( express.json() );
+
+        // New middlewares 
+        this.app.use( this.ddos.express);
+        // Delete Head
+        this.app.disable('x-powered-by');
+        // Static content
+        this.app.use( express.static( 'public' ) );
+        
+        // List of routes
+        if (routes) {
+
+            this.app.use(...routes)
+        }
+
+        // If the server is a web service
+        if (viewEngine) {
+            
+            this.app.set('view engine', viewEngine);
+            this.app.set('views', './public');
+        }
+        
+        // If the path does not exist
+        if (routError) {
+
+            this.app.use(routError);
+        } 
+
+
+        if (ifProductionMode) {
+
+            // Use all threads
+            if (cluster.isMaster) {
+                for (let i = 0; i < this.numCpu; i++) {
+                    
+                    cluster.fork();
+                }
+                cluster.on('exit', (worker, code, signal) => {
+                    console.log(`worker ${ worker.process.pid } die`);
+                    cluster.fork();
+                })
+            
+            } else {
+                this.app.listen( port, () => {
+                    console.log(`Server at ${ process.pid } @ http://localhost:${ port }`)
+                });
+            }
+            
+        } else {
+
+            this.app.listen( port, () => {
+                console.log(`Server at ${ process.pid } @ http://localhost:${ port }`)
+            });
+        }
+    }
+}
+```
+
+
+
+Al igual que antes, podemos ver un par de cosas nuevas, lo primero que vemos son las nuevas importaciones, dejame explicarte el porque están allí
+
+Las primeras dos importaciones
+```ts
+// New imports
+import cluster from "cluster";
+import os from "os";
+```
+Hacen referencia a los hilos disponibles de la maquina donde se esta ejecutando la app, `Node` es muy eficiente al ser `Single Thread` es decir, que con un solo hilo hace maravillas, pero si la maquina tiene mas de 1 hilo de procesamiento, es decir es 4 núcleos, 8 hilos, resultaría que 7 de los 8 hilos de procesamiento se perderían y obviamente no queremos eso, y allí llegan estos `packages` al rescate, resulta que podemos levantar una instancia de la app en `Node` en cada hijo haciendo que el servidor pueda procesar por muchos más peticiones  porque hay mas potencia vertical ( [Link para diferenciar entre escalamiento vertical vs horizontal ](https://www.arsys.es/blog/soluciones/escalado-horizontal-vs-vertical/) )
+
+Lo segundo que podemos ver es una importación con el método antiguo 
+```ts
+// Imported with required because it has no types
+const Ddos = require('ddos')
+```
+Este `Package` nos permite controlar los ataque Ddos desde la app en `Node`, también se puede hacer desde un servidor web como `Nginx` o `Apache` u otros y puede ser mas efectivo pero eso require tocar infraestructura que normalmente se vende como `Virtual Machines` o `IAAS` que suele ser mas costoso, y requiere tener un conocimiento mas avanzado, yo aun no llego a dominar los servidores web a ese punto, posiblemente cuando llegue haga un articulo sobre el tema
+
+```ts
+// New Atributes
+private ddos = new Ddos({burst:10, limit:15})
+this.app.use( this.ddos.express);
+```
+
+Ojo colocar cada linea donde corresponda, aquí solo lo extraigo para poder explicar un poco que hace, bueno el parámetro `burst` es el numero de peticiones en ráfaga que se pueden hacer mientras que `limit` es la cantidad de veces que se puede repetir el parámetro `burst` en una cantidad determinada de tiempo
+
+Lo siguiente que podemos ver son los `atributos con nombre que son opcionales` ( joder tengo que buscarle una abreviatura, tal vez `AQUENO` )
+```ts
+viewEngine?: ViewEngine
+ifProductionMode?: boolean
+routError?: (req: Request, res: Response) => void;
+```
+El primer parámetro que vemos es `ViewEngine` y este hace referencia al motor de plantilla que vamos a usar para el renderizado del html desde el servidor ( SSR ), este argumento es un enum, asi qye solo hay que importarlo y ver que opciones tiene, recuerde que la clase `Serve` se llama desde `/src/index.ts` y después de modificarla un poco se vería algo asi
+
+```ts
+import routes from './router/router';
+import Serve, { ViewEngine } from './serve';
+import { Request, Response } from 'express';
+
+new Serve({
+    ifProductionMode: process.env.PORT ? true : false ,
+    port: process.env.PORT || 3000,
+    viewEngine: ViewEngine.EJS,
+    routes: [
+        routes,
+    ],
+    routError: ( req: Request, res: Response ) => {
+        res.send('page not found')
+    }
+});
+```
+
+El argumento `ifProductionMode` hace referencia si se esta ejecutando localmente o en una maquina en la nube mienta que `routerError` hace referencia a la función que se ejecutara cuando un cliente haga una petición a una ruta que aun no existe 
